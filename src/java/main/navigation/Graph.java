@@ -1,6 +1,7 @@
 package navigation;
 
 import Dijkstra.Heap;
+import Dijkstra.Node;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -133,36 +134,50 @@ public class Graph {
         }
     }
 
-    public void findMinimumPath(int sourceKey, int destinationKey){
+    public void findMinimumPaths(City source){
         int[] cityKeys = new int[this.cities.size()];
 
-        for(int i = 0; i < cityKeys.length; i++){
+        // generate a list of city keys form the cities in the graph
+        for(int i = 0; i < this.cities.size(); i++){
             cityKeys[i] = this.cities.get(i).getKey();
         }
 
-        Heap queue = new Heap(sourceKey, cityKeys);
-        String[] predecessors = new String[this.cities.size()];
+        Heap queue = new Heap(source.getKey(), cityKeys);
+        Node[] paths = new Node[queue.getSize()];
 
-        queue.printNodeIndices();
-        queue.printNodes();
+        // dijkstra's algorithm
 
-        int i = queue.pop().getCityKey() - 1;
 
-        for(int j = 0; j < adjacencyMatrix[i].length; j++){
-            if(adjacencyMatrix[i][j] == true){
-                for(Road road: roads){
-                    if(road.getSource() == i + 1 && road.getDestination() == j + 1){
-                        System.out.println(road.getSource() + " " + road.getDestination() + " " + road.getDistance());
-                        queue.updateDistance(road.getSource() + 1, road.getDestination(), road.getDistance());
+        Node currentNode;
 
-                    }
+
+        // locate roads associated with current node
+
+        while(queue.notEmpty()) {
+
+            currentNode = queue.pop();
+            if(currentNode.getDistanceTo() == Integer.MAX_VALUE){
+                break;
+            }
+
+            for (Road road : this.roads) {
+
+                if (road.getSource() == currentNode.getCityKey()) {
+                    queue.updateDistance(road.getSource(),
+                            road.getDestination(),
+                            road.getDistance(),
+                            currentNode.getDistanceTo());
                 }
             }
+
+
+
+            paths[currentNode.getCityKey() - 1] = currentNode;
         }
 
 
 
-
+        source.setPaths(paths);
     }
 
     private void purgeRoad(int sourceKey, int destinationKey){
@@ -174,6 +189,18 @@ public class Graph {
 
         this.printRoads();
         this.printAdjacencies();
+    }
+
+    public String getCityCodeByKey(int key){
+        String cityCode = this.cities.get(key - 1).getCode();
+
+        return cityCode;
+    }
+
+    public City getCityByKey(int key){
+        City city = this.cities.get(key - 1);
+
+        return city;
     }
 
     /*

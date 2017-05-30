@@ -7,10 +7,12 @@ package Dijkstra;
 public class Node {
     private int cityKey;
     private int distanceTo;
+    private int predecessor;
 
     public Node(int cityKey, int distanceTo){
         this.cityKey = cityKey;
         this.distanceTo = distanceTo;
+        this.predecessor = cityKey;
     }
 
     public int getCityKey() {
@@ -27,5 +29,13 @@ public class Node {
 
     public void setDistanceTo(int distanceTo) {
         this.distanceTo = distanceTo;
+    }
+
+    public int getPredecessor() {
+        return predecessor;
+    }
+
+    public void setPredecessor(int predecessor) {
+        this.predecessor = predecessor;
     }
 }

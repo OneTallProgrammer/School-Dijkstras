@@ -145,9 +145,9 @@ public class Project3 {
             System.out.println("Error: Invalid Destination City Code");
         }
         else {
-            int source = graph.getCityByCode(roadData[0]).getKey();
-            int destination = graph.getCityByCode(roadData[1]).getKey();
-            graph.findMinimumPath(source, destination);
+            City source = graph.getCityByCode(roadData[0]);
+            City destination = graph.getCityByCode(roadData[1]);
+            source.printPath(destination, graph);
         }
     }
 }

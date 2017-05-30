@@ -34,7 +34,6 @@ public class Heap {
         }
         else{
             int parent = (index - 1)/2;
-            System.out.println("Parent = " + parent);
             if(this.nodes[index].getDistanceTo() < this.nodes[parent].getDistanceTo()){
                 swapNodes(index, parent);
                 reheapifyUp(parent);
@@ -42,28 +41,28 @@ public class Heap {
         }
     }
 
-    public void reheapifyDown(int index){
-        int left = 2*index + 1;
-        int right = 2*index + 2;
+    public void reheapifyDown(int index) {
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
 
         // if right & left child exists
-        if(right < this.openIndex){
+        // if end of heap not reached
+        if (right < this.openIndex) {
             // check both
-            if(this.nodes[left].getDistanceTo() < this.nodes[right].getDistanceTo()){
-                if(this.nodes[index].getDistanceTo() > this.nodes[right].getDistanceTo()){
+            if (this.nodes[left].getDistanceTo() > this.nodes[right].getDistanceTo()) {
+                if (this.nodes[index].getDistanceTo() > this.nodes[right].getDistanceTo()) {
                     swapNodes(index, right);
                     reheapifyDown(right);
                 }
-            }
-            else if(this.nodes[index].getDistanceTo() > this.nodes[left].getDistanceTo()){
+            } else if (this.nodes[index].getDistanceTo() > this.nodes[left].getDistanceTo()) {
                 swapNodes(index, left);
                 reheapifyDown(left);
             }
         }
         // if only left child exists
-        else if(left < this.openIndex){
+        else if (left < this.openIndex) {
             // only check left
-            if(this.nodes[index].getDistanceTo() > this.nodes[left].getDistanceTo()){
+            if (this.nodes[index].getDistanceTo() > this.nodes[left].getDistanceTo()) {
                 swapNodes(index, left);
                 reheapifyDown(left);
             }
@@ -73,9 +72,6 @@ public class Heap {
             // neither child exists
             return;
         }
-
-        // by the rules of a complete tree, if there is no left child,
-        // the node has reached the maximum depth of the tree
     }
 
     private void swapNodes(int a, int b){
@@ -88,8 +84,9 @@ public class Heap {
     }
 
     public void printNodes(){
-        for(Node node: nodes){
-            System.out.println("City Key: " + node.getCityKey() + " distanceTo: " + node.getDistanceTo());
+        for(int i = 0; i < this.openIndex; i++){
+            System.out.println("City Key: " + this.nodes[i].getCityKey() + " distanceTo: " +
+                    this.nodes[i].getDistanceTo());
         }
     }
 
@@ -104,32 +101,34 @@ public class Heap {
 
         Node frontNode = nodes[0];
         nodes[0] = nodes[openIndex];
+        reheapifyDown(0);
 
         return frontNode;
+    }
+
+    public boolean notEmpty(){
+        if(openIndex == 0){
+            return false;
+        }
+
+        return true;
     }
 
     public int getSize(){
         return this.nodes.length;
     }
 
-    public void updateDistance(int source, int destination, int distanceToDestination){
-        source = source - 1;
-        destination = destination - 1;
+    public void updateDistance(int sourceKey, int destinationKey, int distanceToDestination, int sourceDistance){
 
-        int sourceLocationInHeap = nodeIndices[source];
-        int destLocationInHeap = nodeIndices[destination];
+        int sourceLocationInHeap = nodeIndices[sourceKey - 1];
+        int destLocationInHeap = nodeIndices[destinationKey - 1];
 
-        int newDistance = nodes[sourceLocationInHeap].getDistanceTo() + distanceToDestination;
-
-        System.out.println("Source Location: " + sourceLocationInHeap);
-        System.out.println("Destination Location: " + destLocationInHeap);
-        System.out.println("Source: " + source);
-        System.out.println("Destination: " + destination);
-        System.out.println("distance to Predecessor: " + nodes[sourceLocationInHeap].getDistanceTo());
-        System.out.println("distance to new city: " + distanceToDestination);
+        int newDistance = sourceDistance + distanceToDestination;
 
         if(newDistance < nodes[destLocationInHeap].getDistanceTo()){
             nodes[destLocationInHeap].setDistanceTo(newDistance);
+            nodes[destLocationInHeap].setPredecessor(sourceKey);
+            reheapifyUp(destLocationInHeap);
         }
     }
 }
